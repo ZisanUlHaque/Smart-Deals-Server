@@ -91,6 +91,11 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/latest-product' , async(req,res)=>{
+      const cursor = productCollection.find().sort({created_at: -1}).limit(6);
+      const result = await cursor.toArray();
+      res.send(result)
+    })
     //bids related api
     app.get("/bids", async (req, res) => {
       const email = req.query.email;
