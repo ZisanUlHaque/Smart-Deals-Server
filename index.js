@@ -10,7 +10,15 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+const logger = (req,res, next) =>{
+  console.log('logging info')
+  next();
+}
 
+const verifyFireBaseToken = (req,res,next) =>{
+  console.log('in the verify middleware',req.headers.authorization)
+  next();
+}
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ifwcykr.mongodb.net/?appName=Cluster0`;
 // const uri = "localhost:27017"
@@ -120,7 +128,8 @@ async function run() {
     });
 
     // // bids related apis
-    app.get("/bids", async (req, res) => {
+    app.get("/bids", logger,verifyFireBaseToken, async (req, res) => {
+      // console.log('headers',req.headers)
       const email = req.query.email;
       const query = {};
       if (email) {
@@ -140,17 +149,17 @@ async function run() {
         res.send(result);
     })
 
-    app.get('/bids', async (req, res) => {
+    // app.get('/bids', async (req, res) => {
 
-        const query = {};
-        if (query.email) {
-            query.buyer_email = email;
-        }
+    //     const query = {};
+    //     if (query.email) {
+    //         query.buyer_email = email;
+    //     }
 
-        const cursor = bidsCollection.find(query);
-        const result = await cursor.toArray();
-        res.send(result);
-    })
+    //     const cursor = bidsCollection.find(query);
+    //     const result = await cursor.toArray();
+    //     res.send(result);
+    // })
 
     app.post("/bids", async (req, res) => {
       const newBid = req.body;
